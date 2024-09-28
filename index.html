@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz : Démarche Marketing & Définition des Marchés</title>
+    <style>
+        body {
+            font-family: 'Mayan', sans-serif;
+            margin: 0;
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #333;
+            text-align: center;
+        }
+        .quiz-container, .summary {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            background-image: url('images/back.jpg.webp');
+            background-size: cover;
+            background-position: center;
+        }
+        .question {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #000;
+        }
+        .choices {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            margin-left: 20%;
+        }
+        .choices li {
+            margin: 8px 0;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #FF0000;
+            color: white;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #CC0000;
+        }
+        .summary {
+            display: none;
+        }
+        .summary ul {
+            list-style: none;
+            padding: 0;
+        }
+        .summary li {
+            text-align: left;
+            margin-left: 20%;
+            margin-bottom: 10px;
+        }
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+        .score {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            .quiz-container, .summary {
+                max-width: 90%;
+                margin: 20px auto;
+                padding: 15px;
+                border-radius: 10px;
+            }
+            button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+        }
+        @media (max-width: 480px) {
+            .quiz-container, .summary {
+                padding: 10px;
+                margin: 10px;
+                border-radius: 10px;
+            }
+            .question {
+                font-size: 16px;
+            }
+            button {
+                font-size: 12px;
+                padding: 6px 12px;
+                border-radius: 10px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .quiz-container, .summary {
+                max-width: 800px;
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="quiz-container" id="quiz-container">
+    <h2>Quiz : Courbe de Phillips et Inflation</h2>
+    <div id="question-container">
+        <!-- Les questions seront affichées ici dynamiquement -->
+    </div>
+    <button id="next-button" onclick="nextQuestion()">Suivant</button>
+</div>
+
+<div class="summary" id="summary">
+    <h3>Récapitulatif</h3>
+    <ul id="summary-list">
+        <!-- Le récapitulatif des réponses sera affiché ici -->
+    </ul>
+    <div class="score" id="score"></div>
+    <button onclick="restartQuiz()">Recommencer</button>
+</div>
+
+<script>
+    const quizData = [
+        { question: "Que montre la courbe de Phillips ?", choices: ["La relation entre le chômage et la masse monétaire", "La relation inverse entre le chômage et l'inflation", "La relation directe entre les salaires et la productivité", "La relation entre les taux d'intérêt et l'investissement"], correct: 1 },
+        { question: "Que se passe-t-il lorsque le taux de chômage baisse selon la courbe de Phillips ?", choices: ["L'inflation diminue", "L'inflation augmente", "Les salaires diminuent", "Le chômage augmente"], correct: 1 },
+        { question: "Qu'est-ce que le NAIRU ?", choices: ["Le taux de chômage qui accélère l'inflation", "Le taux de chômage naturel qui n'accélère pas l'inflation", "Le taux d'intérêt naturel", "Le niveau d'inflation stable"], correct: 1 },
+        { question: "Comment les salaires réagissent-ils à une baisse du taux de chômage selon la courbe de Phillips ?", choices: ["Ils augmentent plus rapidement", "Ils diminuent", "Ils restent stables", "Ils n'ont aucun lien avec le chômage"], correct: 0 },
+        { question: "Quelle est la relation entre les salaires et l'inflation selon la courbe de Phillips ?", choices: ["Les salaires augmentent plus rapidement que l'inflation", "Une augmentation des salaires contribue à l'inflation", "Une baisse des salaires conduit à une hausse de l'inflation", "Les salaires sont indépendants de l'inflation"], correct: 1 },
+        { question: "Qu'est-ce que la politique de 'Stop and Go' dans le cadre de la courbe de Phillips ?", choices: ["Une politique visant à réduire l'inflation et à stabiliser la monnaie", "Une alternance entre des politiques expansionnistes (GO) et restrictives (STOP)", "Une politique monétaire visant à stimuler l'investissement", "Une stratégie visant à réduire les taux d'intérêt en cas de récession"], correct: 1 },
+        { question: "Quelle est la critique principale de Friedman sur la courbe de Phillips ?", choices: ["La courbe de Phillips est valable uniquement à court terme", "L'inflation n'est pas liée au chômage", "Le chômage ne peut pas être réduit par l'inflation à long terme", "La courbe de Phillips n'est pas applicable en période de crise"], correct: 0 },
+        { question: "Selon Friedman, que se passe-t-il à long terme avec l'inflation anticipée ?", choices: ["L'inflation anticipée reste constante", "L'inflation anticipée s'ajuste et neutralise l'effet sur le chômage", "L'inflation anticipée diminue à long terme", "Le chômage continue de baisser"], correct: 1 },
+        { question: "Qu'est-ce que le NAWRU ?", choices: ["Le taux de chômage qui permet de maintenir les salaires stables", "Le taux de chômage qui n'accélère pas l'inflation salariale", "Le taux de chômage qui augmente les salaires réels", "Le taux d'intérêt naturel"], correct: 1 },
+        { question: "Que montre la courbe de Phillips à long terme ?", choices: ["Une relation stable entre l'inflation et le chômage", "Une courbe verticale indiquant que l'inflation n'affecte pas le chômage", "Une diminution continue de l'inflation", "Une courbe en forme de U indiquant un lien direct entre les deux"], correct: 1 },
+        { question: "Comment la courbe de Phillips est-elle affectée par les anticipations d'inflation à court terme ?", choices: ["Elle devient plus verticale", "Elle devient plus horizontale", "Elle se déplace vers le haut", "Elle se déplace vers la droite"], correct: 2 },
+        { question: "Que se passe-t-il en cas de choc pétrolier selon la critique de Friedman ?", choices: ["Les coûts non salariaux augmentent, entraînant une hausse des prix", "Le chômage diminue rapidement", "Les salaires augmentent mais les prix restent stables", "L'inflation baisse à long terme"], correct: 0 },
+        { question: "Pourquoi la courbe de Phillips est-elle verticale à long terme selon Lucas ?", choices: ["Parce que les agents anticipent parfaitement l'inflation", "Parce que le chômage reste stable indépendamment de l'inflation", "Parce que les taux d'intérêt sont constants", "Parce que l'inflation n'affecte plus les prix des biens"], correct: 0 },
+        { question: "Quel est l'effet d'une inflation anticipée sur les négociations salariales ?", choices: ["Les salaires augmentent moins vite que prévu", "Les salaires augmentent plus rapidement", "Les salaires restent stables", "Les négociations salariales n'ont aucun effet sur l'inflation"], correct: 1 },
+        { question: "Comment stabiliser l'inflation selon la courbe de Phillips à long terme ?", choices: ["Maintenir un taux de chômage proche du taux naturel", "Réduire fortement la masse monétaire", "Augmenter les dépenses publiques", "Baisser les salaires pour diminuer les coûts de production"], correct: 0 }
+    ];
+
+    let currentQuestionIndex = 0;
+    let selectedAnswers = [];
+
+    function loadQuestion() {
+        const container = document.getElementById('question-container');
+        container.innerHTML = '';
+
+        const questionData = quizData[currentQuestionIndex];
+        const questionElem = document.createElement('div');
+        questionElem.className = 'question';
+        questionElem.textContent = questionData.question;
+
+        const choicesElem = document.createElement('ul');
+        choicesElem.className = 'choices';
+
+        questionData.choices.forEach((choice, index) => {
+            const choiceElem = document.createElement('li');
+            const choiceInput = document.createElement('input');
+            choiceInput.type = 'radio';
+            choiceInput.name = 'choice';
+            choiceInput.value = index;
+            choiceInput.id = `choice${index}`;
+            
+            const choiceLabel = document.createElement('label');
+            choiceLabel.htmlFor = `choice${index}`;
+            choiceLabel.textContent = choice;
+
+            choiceElem.appendChild(choiceInput);
+            choiceElem.appendChild(choiceLabel);
+            choicesElem.appendChild(choiceElem);
+        });
+
+        container.appendChild(questionElem);
+        container.appendChild(choicesElem);
+    }
+
+    function nextQuestion() {
+        const selectedChoice = document.querySelector('input[name="choice"]:checked');
+        if (!selectedChoice) {
+            alert("Veuillez sélectionner une réponse !");
+            return;
+        }
+
+        selectedAnswers.push(parseInt(selectedChoice.value));
+        currentQuestionIndex++;
+
+        if (currentQuestionIndex < quizData.length) {
+            loadQuestion();
+        } else {
+            showSummary();
+        }
+    }
+
+    function showSummary() {
+        document.getElementById('quiz-container').style.display = 'none';
+        const summary = document.getElementById('summary');
+        summary.style.display = 'block';
+
+        const summaryList = document.getElementById('summary-list');
+        summaryList.innerHTML = '';
+
+        let correctAnswers = 0;
+
+        quizData.forEach((q, index) => {
+            const summaryItem = document.createElement('li');
+            summaryItem.innerHTML = `
+                <strong>${q.question}</strong><br>
+                <div style="text-align: left; margin-left: 20%;">
+                    Votre réponse: ${q.choices[selectedAnswers[index]]} - 
+                    ${selectedAnswers[index] === q.correct ? '<span class="correct">Correct</span>' : '<span class="incorrect">Incorrect</span>'}<br>
+                    Bonne réponse: ${q.choices[q.correct]}
+                </div>
+            `;
+            summaryList.appendChild(summaryItem);
+            if (selectedAnswers[index] === q.correct) {
+                correctAnswers++;
+            }
+        });
+
+        document.getElementById('score').textContent = `Score: ${correctAnswers} / ${quizData.length}`;
+    }
+
+    function restartQuiz() {
+        currentQuestionIndex = 0;
+        selectedAnswers = [];
+        document.getElementById('summary').style.display = 'none';
+        document.getElementById('quiz-container').style.display = 'block';
+        loadQuestion();
+    }
+
+    loadQuestion();
+</script>
+
+</body>
+```
+</html>
